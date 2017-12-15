@@ -1,0 +1,82 @@
+-------------->
+青岛理工大学 琴岛学院 2011/May/12
+
+机电工程系 ——Yangyue&&NERV
+
+QQ:357017598
+-------------->
+
+STM32F103ZE 工程交流模板 基于 STM32F10x_StdPeriph_Lib_V3.5.0 [11-March-2011]
+
+-------------->
+创建一个工程模板:
+	1. 解压STM32库文件 然后拷贝
+	2. 目录结构: 
+		Main
+			-> stm32f10x_it.c     此三个文件在同一个目录，用户编写。
+			-> stm32f10x_conf.h   
+			-> main.c
+
+	   	_CMSIS
+	       	-> core_cm2.c    汇编接口
+		   	-> system_stm32f10x.c 
+		
+		_DeviceSupport
+			-> 所有的s文件 启动代码
+
+
+Select the corresponding startup file depending of the used device:
+- startup_stm32f10x_ld_vl.s:    for STM32 Low density Value line devices
+- startup_stm32f10x_ld.s:       for STM32 Low density devices
+- startup_stm32f10x_md_vl.s:    for STM32 Medium density Value line devices
+- startup_stm32f10x_md.s:       for STM32 Medium density devices 
+- startup_stm32f10x_hd.s:       for STM32 High density devices
+- startup_stm32f10x_xl.s:       for STM32 XL density devices         
+- startup_stm32f10x_cl.s:       for STM32 Connectivity line devices 
+
+
+
+		_STM32F10x_StdPeriph_Driver
+			-> 所有的c文件 V3.5.0的官方固件
+
+
+-------------->
+注意事项：
+	1. Main.c应该放在_CMSIS的前面。且必须有文件stm32f10x_conf.h ， 否则就默认include了keil的stm32f10x_conf.h文件
+    
+	2. 注意inlcude path的顺序.
+	
+	3. 在Preprocessor Symbols中定义 USE_STDPERIPH_DRIVER[使用标准外设库驱动], 否则编译出现 assert_param 未找到的错误：
+
+	4. 优化等级  00 表示不优化 
+
+	5. One elf per function.  只编译用到的函数.
+
+
+
+拷贝 STM32F10x_StdPeriph_Examples 下每个目录的  main.c stm32f10x_conf.h  stm32f10x_it.c 到 src 目录 即是一个范例 
+
+
+
+
+-------------->
+    Copy Keil 范例的 stm32_Init.c 到项目中，编译。
+	   发现一个定义的错误。 是因为keil的头文件和st库的3.30的头文件中定义不一样
+	      keil                    ->     st
+		  USART1_IRQChannel	     改为    USART1_IRQn 
+		  USART2_IRQChannel	     改为    USART2_IRQn 
+		  USART3_IRQChannel	     改为    USART3_IRQn 
+
+	编译通过！
+
+
+
+--------------->
+	Copy Keil 范例的 RTX_Conf_CM.c 到项目中, 设置options中Operation system 为RTX-Kernel
+	可以开始使用Keil的RTOS.
+	
+
+     
+
+    
+

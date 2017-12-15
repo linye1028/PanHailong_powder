@@ -1,0 +1,5 @@
+-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I..\ -I..\Src -I..\..\Libraries\CMSIS\CM3\CoreSupport -I..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x -I..\..\Libraries\STM32F10x_StdPeriph_Driver\inc -I..\Src\modbus\include -I..\Src\modbus\port -I..\Src\modbus\rtu -I..\Src\modbus\ascii -I..\..\SYSTEM 
+-I "C:\Keil\For ARM\ARM\RV31\INC" 
+-I "C:\Keil\For ARM\ARM\CMSIS\Include" 
+-I "C:\Keil\For ARM\ARM\Inc\ST\STM32F10x" 
+-DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210E_EVAL -o "..\Output\STM32F10X_HD\mbfuncinput.o" --omf_browse "..\Output\STM32F10X_HD\mbfuncinput.crf" --depend "..\Output\STM32F10X_HD\mbfuncinput.d" "..\Src\modbus\functions\mbfuncinput.c"
