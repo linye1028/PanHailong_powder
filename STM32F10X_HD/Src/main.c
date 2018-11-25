@@ -1,10 +1,10 @@
 /*********************************
 Project:HVOF Powder Controller
-Date:20170326
+Date:20171210
 错误代码：
 Er01 伺服驱动器故障报警
 Er02 加速完成1s后实际转速和设定转速相差超过0.5
-
+Er08 累积工作时间超过2400分钟(40小时)提醒设备保养，同时按住UP和DOWN键可以消除错误提示
 **********************************/
 
 /* Includes ------------------------------------------------------------------*/
@@ -30,7 +30,8 @@ Er02 加速完成1s后实际转速和设定转速相差超过0.5
 
 #define KEY_RUN IN0
 #define Err_IN  IN1
-#define Err_LED 1
+#define Err_LED 2
+#define Work_LED 1
 
 int MotoSpeedSet=10; //设置转速
 u16 MotoSpeedActual; //实测转速
@@ -157,6 +158,7 @@ int main(void)
 	MotoSpeedSet=MotoSpeed_H*256+MotoSpeed_L;
 
 	DOL &=~(1<<0);
+	DOL &= ~(1<<Work_LED);
 	setdol();
 
 	HSOE1=1;
@@ -199,10 +201,12 @@ int main(void)
 				SET_AccelerateFinish_1sdelay=0;
 				SET_DecelerateRun=0;
 				DOL |= 1<<0;
+				DOL |= 1<<Work_LED;
 				setdol();	
 			}
 		}
 
+		
 
 		//如果拨到停机，立刻停止
 		if(KEY_RUN)
@@ -294,7 +298,7 @@ int main(void)
 			Flag_timer_minute0=1;	
 
 		//如果累积工作时间大于2400分钟，则提示Er08，此时如果同时按下UP和DOWN键，清空工作时间并消除错误提示
-		if(AccumulateWorkMinute>2)
+		if(AccumulateWorkMinute>2400)
 		{
 			ErrNO=8;
 			DisplayContent=3;
@@ -307,21 +311,12 @@ int main(void)
 			RTC_Configuration();
 			RTC_Set(1000,1,1,0,21,0);//1000年1月1日 0点0分0秒
 			BKP_WriteBackupRegister(BKP_DR4,0);  //累积工作分钟寄存器清空 			
-			
 		}
 
-
-
-	
-
-
-
-		
 		if(SET_AccelerateFinish)	
 			TIM2->ARR=(u16)(342860/(unsigned long)MotoSpeedSet)-1;
 		else if(SET_AccelerateRun || SET_DecelerateRun)
 				    TIM2->ARR=(u16)(342860/(unsigned long)MotoSpeedTemp)-1;	
-		
 
 	}
 
@@ -987,6 +982,7 @@ void TIM5_IRQHandler(void)
 				MotoSpeedTemp=6;
 				SET_DecelerateRun=0;
 				DOL &= ~(1<<0);
+				DOL &= ~(1<<Work_LED);
 				setdol();
 			}			
 		}
@@ -1103,6 +1099,7 @@ void EXTI4_IRQHandler(void)
 			{
 				MotoSpeedSet=0;
 				DOL &=~(1<<0); //关闭伺服
+				DOL &= ~(1<<Work_LED);
 				setdol();
 			}
 		}	
@@ -1203,6 +1200,7 @@ void TIM4_IRQHandler(void)
 				{
 					MotoSpeedSet=0;
 					DOL &=~(1<<0); //关闭伺服
+					DOL &= ~(1<<Work_LED);
 					setdol();
 				}
 			}			
